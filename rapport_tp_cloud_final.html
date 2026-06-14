@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport TP — Cloud & Virtualisation | AKRAM LOUTOUAT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Mulish:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --navy:#0c1628;--blue:#1a3a6e;--cyan:#00b4d8;--gold:#f4a93a;
+  --bg:#edf0f8;--white:#ffffff;--gray:#e4e9f5;--gray2:#b8c2d8;
+  --text:#1c2035;--texts:#4e5873;
+  --green:#10b981;--orange:#f59e0b;--red:#ef4444;--purple:#7c3aed;
+  --esxi:#1a3a8e;--prox:#00695c;
+  --r:10px;--sh:0 2px 18px rgba(12,22,40,.09);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Mulish',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:14.5px;overflow-x:hidden;}
+#pb{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--gold));z-index:9999;width:0;transition:width .2s;}
+#btt{position:fixed;bottom:22px;right:22px;width:42px;height:42px;border-radius:50%;background:var(--navy);color:var(--cyan);border:none;font-size:1em;cursor:pointer;opacity:0;visibility:hidden;transition:all .3s;box-shadow:0 4px 14px rgba(0,180,216,.3);z-index:99;}
+#btt.show{opacity:1;visibility:visible;}
+#btt:hover{transform:translateY(-3px);}
+.fnav{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;}
+.fd{width:10px;height:10px;border-radius:50%;background:rgba(12,22,40,.18);cursor:pointer;transition:all .25s;position:relative;}
+.fd:hover,.fd.on{background:var(--cyan);transform:scale(1.5);box-shadow:0 0 8px var(--cyan);}
+.fd .tip{position:absolute;right:18px;top:50%;transform:translateY(-50%);background:var(--navy);color:#fff;padding:3px 10px;border-radius:5px;font-size:.68em;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;font-family:'Mulish',sans-serif;}
+.fd:hover .tip{opacity:1;}
+
+/* COVER */
+.cover{min-height:100vh;background:var(--navy);display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 24px;position:relative;overflow:hidden;color:#fff;}
+.cv-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,180,216,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,216,.035) 1px,transparent 1px);background-size:44px 44px;}
+.cv-g1{position:absolute;top:-30%;left:-20%;width:70%;height:110%;background:radial-gradient(ellipse,rgba(0,180,216,.1) 0%,transparent 65%);animation:gp 7s ease-in-out infinite alternate;}
+.cv-g2{position:absolute;bottom:-25%;right:-15%;width:55%;height:90%;background:radial-gradient(ellipse,rgba(244,169,58,.07) 0%,transparent 60%);animation:gp 9s ease-in-out 2s infinite alternate;}
+@keyframes gp{from{opacity:.55;}to{opacity:1;}}
+.cv-in{position:relative;z-index:2;max-width:660px;}
+.cv-univ{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(0,180,216,.28);border-radius:30px;padding:7px 20px;font-family:'Syne',sans-serif;font-size:.78em;letter-spacing:1.5px;text-transform:uppercase;color:#90e0ef;margin-bottom:34px;opacity:0;animation:sd .7s ease .3s forwards;}
+.dblink{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:bk 1.5s infinite;}
+@keyframes bk{0%,100%{opacity:1;}50%{opacity:.2;}}
+.cv-badge{display:inline-block;background:linear-gradient(135deg,var(--cyan),#005fa3);border-radius:7px;padding:5px 16px;font-family:'Syne',sans-serif;font-size:.75em;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:16px;opacity:0;animation:sd .7s ease .5s forwards;}
+.cover h1{font-family:'Syne',sans-serif;font-size:clamp(2em,4.5vw,3.1em);font-weight:800;line-height:1.18;margin-bottom:10px;opacity:0;animation:si .8s ease .7s forwards;}
+.cover h1 span{color:var(--cyan);}
+.cover .sub{font-size:.98em;color:rgba(255,255,255,.55);margin-bottom:40px;opacity:0;animation:su .7s ease .9s forwards;}
+.cv-div{width:52px;height:3px;background:linear-gradient(90deg,var(--cyan),var(--gold));border-radius:2px;margin:0 auto 34px;opacity:0;animation:si .6s ease 1s forwards;}
+.cv-card{background:rgba(255,255,255,.05);border:1px solid rgba(0,180,216,.18);border-radius:14px;padding:24px 38px;display:inline-block;text-align:left;margin-bottom:36px;backdrop-filter:blur(10px);opacity:0;animation:su .8s ease 1.1s forwards;min-width:310px;}
+.cv-row{display:flex;align-items:baseline;gap:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.91em;}
+.cv-row:last-child{border-bottom:none;}
+.cv-lbl{color:#90e0ef;font-size:.7em;font-family:'Syne',sans-serif;letter-spacing:1px;text-transform:uppercase;min-width:96px;flex-shrink:0;}
+.cv-val{color:#fff;font-weight:600;}
+.cv-yr{color:rgba(255,255,255,.32);font-size:.82em;opacity:0;animation:su .7s ease 1.4s forwards;}
+.cv-arr{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:var(--cyan);font-size:1.3em;opacity:0;animation:bounce 2s ease infinite 2s,fi .8s ease 2s forwards;cursor:pointer;}
+@keyframes sd{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes su{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes si{from{opacity:0;transform:scale(.88);}to{opacity:1;transform:scale(1);}}
+@keyframes fi{from{opacity:0;}to{opacity:1;}}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-7px);}}
+
+/* WRAP */
+.wrap{max-width:920px;margin:0 auto;padding:28px 18px 60px;}
+.rv{opacity:0;transform:translateY(26px);transition:all .65s cubic-bezier(.25,.46,.45,.94);}
+.rv.on{opacity:1;transform:translateY(0);}
+
+/* PART HEADER */
+.part-hdr{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-radius:var(--r);padding:24px 32px;margin-bottom:20px;display:flex;align-items:center;gap:18px;box-shadow:0 6px 24px rgba(12,22,40,.2);}
+.ph-ico{width:56px;height:56px;border-radius:12px;background:rgba(0,180,216,.18);border:1.5px solid rgba(0,180,216,.4);display:flex;align-items:center;justify-content:center;font-size:1.8em;flex-shrink:0;}
+.ph-info h2{font-family:'Syne',sans-serif;font-size:1.25em;font-weight:800;margin-bottom:2px;}
+.ph-info p{opacity:.6;font-size:.85em;}
+.ph-pts{margin-left:auto;background:rgba(0,180,216,.15);border:1px solid rgba(0,180,216,.35);border-radius:8px;padding:7px 16px;text-align:center;flex-shrink:0;}
+.ph-pts .n{font-family:'Syne',sans-serif;font-size:1.6em;font-weight:800;color:var(--cyan);}
+.ph-pts .l{font-size:.68em;opacity:.6;}
+
+/* CARD */
+.card{background:#fff;border-radius:var(--r);padding:26px 30px;margin-bottom:20px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--cyan),var(--blue));}
+.ctitle{font-family:'Syne',sans-serif;font-size:1.1em;font-weight:700;color:var(--navy);margin-bottom:16px;padding-bottom:11px;border-bottom:1.5px solid var(--gray);display:flex;align-items:center;gap:10px;}
+.ctitle .ico{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.88em;flex-shrink:0;}
+.ctag{font-size:.6em;background:var(--navy);color:var(--cyan);padding:2px 8px;border-radius:14px;font-family:'JetBrains Mono',monospace;margin-left:auto;}
+h3.st{font-family:'Syne',sans-serif;font-size:.95em;font-weight:700;color:var(--blue);margin:18px 0 10px;padding-left:11px;border-left:3px solid var(--cyan);}
+
+/* BOXES */
+.bx{border-radius:8px;padding:12px 16px;margin:13px 0;display:flex;gap:12px;align-items:flex-start;font-size:.89em;}
+.bx .bi{font-size:1.2em;flex-shrink:0;margin-top:1px;}
+.bx .bt{font-weight:700;margin-bottom:3px;font-size:.87em;}
+.bx.ok{background:#ecfdf5;border-left:3px solid var(--green);}
+.bx.ok .bt{color:#065f46;}
+.bx.sec{background:#f5f3ff;border-left:3px solid var(--purple);}
+.bx.sec .bt{color:#5b21b6;}
+.bx.warn{background:#fffbeb;border-left:3px solid var(--orange);}
+.bx.warn .bt{color:#92400e;}
+.bx.info{background:#eff6ff;border-left:3px solid #3b82f6;}
+.bx.info .bt{color:#1d4ed8;}
+
+/* SCREENSHOT MOCKUP */
+.ss-wrap{margin:16px 0;}
+.ss-label-top{font-family:'Syne',sans-serif;font-size:.78em;font-weight:700;color:var(--texts);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.ss-label-top .badge{background:var(--cyan);color:#fff;padding:2px 9px;border-radius:12px;font-size:.85em;font-family:'JetBrains Mono',monospace;}
+.ss-mockup{border:1px solid #c8d3e8;border-radius:8px;overflow:hidden;box-shadow:var(--sh);}
+.ss-bar{background:#2b3245;display:flex;align-items:center;gap:8px;padding:8px 14px;}
+.ss-dots{display:flex;gap:5px;}
+.ss-dots span{width:10px;height:10px;border-radius:50%;}
+.ss-dots .r{background:#ff5f57;}
+.ss-dots .y{background:#ffbd2e;}
+.ss-dots .g{background:#27c93f;}
+.ss-url{background:#1a2035;color:#8899bb;font-family:'JetBrains Mono',monospace;font-size:.72em;padding:3px 12px;border-radius:4px;flex:1;}
+.ss-body{background:#f4f6fb;padding:16px;}
+
+/* TABLES */
+.tw{overflow-x:auto;margin:12px 0;border-radius:var(--r);box-shadow:var(--sh);}
+table{width:100%;border-collapse:collapse;font-size:.88em;background:#fff;}
+thead tr{background:var(--navy);color:#fff;}
+th{padding:10px 13px;text-align:left;font-family:'Syne',sans-serif;font-size:.78em;letter-spacing:.4px;}
+td{padding:9px 13px;border-bottom:1px solid var(--gray);}
+tbody tr:nth-child(even) td{background:#f7f9fd;}
+tbody tr:hover td{background:#ebf2fc;}
+.esxi-col{color:var(--esxi);font-weight:600;}
+.prox-col{color:var(--prox);font-weight:600;}
+.good{color:var(--green);font-weight:700;}
+.bad{color:var(--red);}
+.mid{color:var(--orange);}
+
+/* CODE */
+pre{background:#0d1b2a;color:#cdd9f0;padding:14px 18px;border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:.79em;line-height:1.65;overflow-x:auto;margin:12px 0;}
+pre .c{color:#3d5a7a;}pre .cmd{color:#7dd3fc;}pre .out{color:#a3e635;}
+code{background:var(--gray);padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.82em;color:#c026d3;}
+
+/* TOC */
+.toc{background:#fff;border-radius:var(--r);padding:26px 30px;margin-bottom:22px;box-shadow:var(--sh);border-top:3px solid var(--cyan);}
+.toc h2{font-family:'Syne',sans-serif;color:var(--navy);font-size:1.1em;margin-bottom:16px;}
+.toc ul{list-style:none;}
+.toc li{padding:6px 10px;border-radius:6px;border-bottom:1px dashed var(--gray);transition:all .2s;font-size:.9em;}
+.toc li:last-child{border-bottom:none;}
+.toc li:hover{background:#f0f7fb;padding-left:18px;}
+.toc a{text-decoration:none;color:var(--blue);font-weight:600;display:flex;align-items:center;gap:9px;}
+.toc a:hover{color:var(--cyan);}
+.tn{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:.76em;min-width:26px;}
+
+/* Q&A */
+.qa{background:#fff;border-radius:var(--r);border:1px solid var(--gray);margin:11px 0;overflow:hidden;box-shadow:0 2px 8px rgba(12,22,40,.05);}
+.qq{background:linear-gradient(135deg,#f0f6ff,#e8eefa);padding:11px 17px;font-weight:600;color:var(--navy);font-size:.88em;border-bottom:1px solid var(--gray);display:flex;gap:10px;}
+.qq::before{content:'Q';color:var(--cyan);font-family:'Syne',sans-serif;font-weight:800;flex-shrink:0;}
+.qa-a{padding:11px 17px;color:var(--texts);font-size:.87em;border-left:3px solid var(--green);background:#fafffe;line-height:1.7;}
+
+/* INTRO */
+.intro-card{background:linear-gradient(135deg,var(--navy),#0f2a55);color:#fff;border-radius:var(--r);padding:28px 32px;margin-bottom:22px;box-shadow:var(--sh);}
+.intro-card h2{font-family:'Syne',sans-serif;font-size:1.2em;margin-bottom:14px;color:var(--cyan);}
+.intro-card p{font-size:.9em;opacity:.85;line-height:1.75;}
+.intro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:18px;}
+.ig{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;text-align:center;}
+.ig .em{font-size:1.7em;margin-bottom:6px;}
+.ig .lbl{font-size:.78em;opacity:.65;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;font-family:'Syne',sans-serif;}
+.ig .val{font-size:.92em;font-weight:600;}
+
+/* FOOTER */
+.foot{text-align:center;padding:30px 20px;color:var(--texts);font-size:.83em;border-top:2px solid var(--gray);margin-top:36px;}
+.foot strong{color:var(--blue);}
+
+@media(max-width:640px){.fnav{display:none;}.card{padding:18px 14px;}.cv-card{min-width:auto;padding:20px 18px;}.part-hdr{flex-direction:column;}.ph-pts{margin-left:0;}.intro-grid{grid-template-columns:1fr;}}
+@media print{body{background:#fff;}#pb,#btt,.fnav,.cv-arr{display:none;}.card{box-shadow:none;border:1px solid #ddd;break-inside:avoid;}.cover{page-break-after:always;min-height:auto;}pre{font-size:8pt;}}
+</style>
+</head>
+<body>
+<div id="pb"></div>
+<button id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<nav class="fnav">
+  <div class="fd" data-t="cover"><span class="tip">Couverture</span></div>
+  <div class="fd" data-t="intro"><span class="tip">Introduction</span></div>
+  <div class="fd" data-t="toc"><span class="tip">Sommaire</span></div>
+  <div class="fd" data-t="pA"><span class="tip">Partie A — ESXi</span></div>
+  <div class="fd" data-t="pB"><span class="tip">Partie B — Proxmox</span></div>
+  <div class="fd" data-t="pC"><span class="tip">Comparaison</span></div>
+  <div class="fd" data-t="pD"><span class="tip">Mini-lab</span></div>
+  <div class="fd" data-t="pF"><span class="tip">Questions & Bilan</span></div>
+</nav>
+
+<!-- ══════════ COVER ══════════ -->
+<div class="cover" id="cover">
+  <div class="cv-grid"></div><div class="cv-g1"></div><div class="cv-g2"></div>
+  <div class="cv-in">
+    <div class="cv-univ"><span class="dblink"></span>Euromed University of Fes</div>
+    <div class="cv-badge">Rapport de Travaux Pratiques</div>
+    <h1>Cloud &amp; Virtualisation<br><span>ESXi vs Proxmox VE</span></h1>
+    <p class="sub">Exploration · Administration · Sécurisation · Comparaison</p>
+    <div class="cv-div"></div>
+    <div class="cv-card">
+      <div class="cv-row"><span class="cv-lbl">Réalisé par</span><span class="cv-val">AKRAM LOUTOUAT</span></div>
+      <div class="cv-row"><span class="cv-lbl">Filière</span><span class="cv-val">Cybersécurité</span></div>
+      <div class="cv-row"><span class="cv-lbl">Encadré par</span><span class="cv-val">AHMED AMAMOU</span></div>
+      <div class="cv-row"><span class="cv-lbl">Année univ.</span><span class="cv-val">2025 / 2026</span></div>
+    </div>
+    <p class="cv-yr">Module : Cloud &amp; Infrastructure — Cycle Ingénieur Cybersécurité</p>
+  </div>
+  <div class="cv-arr" onclick="document.getElementById('intro').scrollIntoView({behavior:'smooth'})">⌄</div>
+</div>
+
+<div class="wrap">
+
+<!-- ══════════ INTRODUCTION ══════════ -->
+<div class="intro-card rv" id="intro">
+  <h2>Introduction</h2>
+  <p>Ce rapport présente les travaux pratiques réalisés dans le cadre du module <strong>Cloud &amp; Infrastructure</strong>. L'objectif est d'explorer, administrer et sécuriser deux hyperviseurs de type 1 : <strong>VMware ESXi</strong> et <strong>Proxmox VE</strong>, puis de les comparer selon des critères techniques et de cybersécurité.</p>
+  <p style="margin-top:10px;">Les travaux couvrent la prise en main des interfaces web, la configuration réseau, la création et gestion de machines virtuelles, l'application de mesures de durcissement, la mise en place d'un mini-lab isolé, et une analyse comparative argumentée.</p>
+  <div class="intro-grid">
+    <div class="ig"><div class="em">🖥️</div><div class="lbl">Hyperviseur 1</div><div class="val">VMware ESXi 8</div></div>
+    <div class="ig"><div class="em">🐧</div><div class="lbl">Hyperviseur 2</div><div class="val">Proxmox VE 8</div></div>
+    <div class="ig"><div class="em">🔒</div><div class="lbl">Contexte</div><div class="val">Cybersécurité</div></div>
+  </div>
+</div>
+
+<!-- ══════════ TOC ══════════ -->
+<div class="toc rv" id="toc">
+  <h2>📑 Table des matières</h2>
+  <ul>
+    <li><a href="#pA"><span class="tn">A</span>Partie A — VMware ESXi : Exploration &amp; Durcissement</a></li>
+    <li><a href="#pB"><span class="tn">B</span>Partie B — Proxmox VE : Exploration &amp; RBAC</a></li>
+    <li><a href="#pC"><span class="tn">C</span>Partie C — Comparaison ESXi vs Proxmox VE</a></li>
+    <li><a href="#pD"><span class="tn">D</span>Partie D — Mini-lab Cybersécurité (architecture isolée)</a></li>
+    <li><a href="#pF"><span class="tn">F</span>Partie F — Questions, livrables &amp; bilan</a></li>
+  </ul>
+</div>
+
+<!-- ══════════════════════════════════════
+     PARTIE A — ESXi
+══════════════════════════════════════ -->
+<div class="part-hdr rv" id="pA">
+  <div class="ph-ico">🖥️</div>
+  <div class="ph-info"><h2>Partie A — VMware ESXi</h2><p>Connexion · Dashboard · Réseau · VM · Snapshots · Logs · Durcissement</p></div>
+  <div class="ph-pts"><div class="n">/4</div><div class="l">barème</div></div>
+</div>
+
+<!-- A1 Dashboard ESXi -->
+<div class="card rv">
+  <div class="ctitle"><div class="ico">📊</div>A.1 — Dashboard ESXi (Host Client)<span class="ctag">§3.1–3.2</span></div>
+  <p>Accès à l'interface via <code>https://&lt;IP_ESXi&gt;/</code> · Connexion avec <code>root</code> · Acceptation du certificat SSL auto-signé.</p>
+
+  <div class="ss-wrap">
+    <div class="ss-label-top"><span class="badge">CAPTURE 1</span> Dashboard ESXi — vue d'ensemble</div>
+    <div class="ss-mockup">
+      <div class="ss-bar">
+        <div class="ss-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="ss-url">🔒 https://192.168.100.10 — VMware ESXi Host Client</div>
+      </div>
+      <div class="ss-body">
+        <svg viewBox="0 0 700 200" width="100%" style="display:block;">
+          <!-- Sidebar -->
+          <rect x="0" y="0" width="150" height="200" fill="#1a237e"/>
+          <text x="75" y="22" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold" font-family="sans-serif">☁️ VMware ESXi</text>
+          <rect x="8" y="32" width="134" height="22" rx="4" fill="#2a4096"/>
+          <text x="20" y="47" font-size="9.5" fill="#90caf9" font-family="sans-serif">🏠 Host</text>
+          <text x="20" y="67" font-size="9.5" fill="#bbdefb" font-family="sans-serif">💻 Virtual Machines</text>
+          <text x="20" y="87" font-size="9.5" fill="#bbdefb" font-family="sans-serif">💾 Storage</text>
+          <text x="20" y="107" font-size="9.5" fill="#bbdefb" font-family="sans-serif">🌐 Networking</text>
+          <text x="20" y="127" font-size="9.5" fill="#bbdefb" font-family="sans-serif">🔧 Manage</text>
+          <text x="20" y="147" font-size="9.5" fill="#bbdefb" font-family="sans-serif">📊 Monitor</text>
+          <!-- Main area -->
+          <rect x="150" y="0" width="550" height="200" fill="#f5f7fa"/>
+          <text x="165" y="20" font-size="11" fill="#1a237e" font-weight="bold" font-family="sans-serif">Host — Summary</text>
+          <text x="165" y="35" font-size="9" fill="#757575" font-family="sans-serif">VMware ESXi 8.0.0 · Build 21203435</text>
+          <!-- CPU box -->
+          <rect x="165" y="45" width="120" height="60" rx="6" fill="#e3f2fd"/>
+          <text x="175" y="62" font-size="8.5" fill="#546e7a" font-family="sans-serif">CPU Usage</text>
+          <text x="175" y="79" font-size="16" fill="#1565c0" font-weight="bold" font-family="sans-serif">14%</text>
+          <rect x="175" y="96" width="100" height="5" rx="2" fill="#bbdefb"/>
+          <rect x="175" y="96" width="14" height="5" rx="2" fill="#1565c0"/>
+          <!-- RAM box -->
+          <rect x="295" y="45" width="120" height="60" rx="6" fill="#e8f5e9"/>
+          <text x="305" y="62" font-size="8.5" fill="#546e7a" font-family="sans-serif">Memory</text>
+          <text x="305" y="79" font-size="13" fill="#2e7d32" font-weight="bold" font-family="sans-serif">2.1 / 4 GB</text>
+          <rect x="305" y="96" width="100" height="5" rx="2" fill="#c8e6c9"/>
+          <rect x="305" y="96" width="53" height="5" rx="2" fill="#2e7d32"/>
+          <!-- Storage box -->
+          <rect x="425" y="45" width="120" height="60" rx="6" fill="#fff3e0"/>
+          <text x="435" y="62" font-size="8.5" fill="#546e7a" font-family="sans-serif">Storage</text>
+          <text x="435" y="79" font-size="13" fill="#e65100" font-weight="bold" font-family="sans-serif">18 / 40 GB</text>
+          <rect x="435" y="96" width="100" height="5" rx="2" fill="#ffe0b2"/>
+          <rect x="435" y="96" width="45" height="5" rx="2" fill="#e65100"/>
+          <!-- VMs box -->
+          <rect x="555" y="45" width="120" height="60" rx="6" fill="#f3e5f5"/>
+          <text x="565" y="62" font-size="8.5" fill="#546e7a" font-family="sans-serif">VMs Running</text>
+          <text x="580" y="82" font-size="20" fill="#7b1fa2" font-weight="bold" font-family="sans-serif">1</text>
+          <!-- Info row -->
+          <rect x="165" y="118" width="510" height="32" rx="5" fill="#e8eaf6"/>
+          <text x="176" y="133" font-size="8.5" fill="#3949ab" font-family="sans-serif">Hostname: esxi-lab.local</text>
+          <text x="176" y="146" font-size="8.5" fill="#546e7a" font-family="sans-serif">IP: 192.168.100.10 · NIC: vmnic0 · Uptime: 3h 22min</text>
+          <!-- VM list -->
+          <rect x="165" y="158" width="510" height="34" rx="5" fill="#fff"/>
+          <text x="176" y="172" font-size="8.5" fill="#1a237e" font-weight="bold" font-family="sans-serif">💻 Test-Debian-ESXi</text>
+          <text x="176" y="184" font-size="8" fill="#4caf50" font-family="sans-serif">● Running · 1 vCPU · 1 GB RAM · 8 GB Disk</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="ss-wrap" style="margin-top:16px;">
+    <div class="ss-label-top"><span class="badge">CAPTURE 2</span> Réseau — vSwitch0 + Port Group Lab-Isolated</div>
+    <div class="ss-mockup">
+      <div class="ss-bar">
+        <div class="ss-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="ss-url">🔒 https://192.168.100.10 — Networking › Port groups</div>
+      </div>
+      <div class="ss-body">
+        <svg viewBox="0 0 700 140" width="100%" style="display:block;">
+          <rect x="0" y="0" width="700" height="140" fill="#f5f7fa"/>
+          <text x="14" y="20" font-size="11" fill="#1a237e" font-weight="bold" font-family="sans-serif">Networking — Port groups</text>
+          <!-- Table header -->
+          <rect x="14" y="28" width="672" height="22" rx="4" fill="#1a237e"/>
+          <text x="24" y="43" font-size="9" fill="#fff" font-family="sans-serif">Name</text>
+          <text x="200" y="43" font-size="9" fill="#fff" font-family="sans-serif">Virtual switch</text>
+          <text x="360" y="43" font-size="9" fill="#fff" font-family="sans-serif">VLAN ID</text>
+          <text x="470" y="43" font-size="9" fill="#fff" font-family="sans-serif">Active ports</text>
+          <text x="580" y="43" font-size="9" fill="#fff" font-family="sans-serif">Promiscuous</text>
+          <!-- Row 1 -->
+          <rect x="14" y="50" width="672" height="22" fill="#fff"/>
+          <text x="24" y="65" font-size="9" fill="#1565c0" font-family="sans-serif">🌐 Management Network</text>
+          <text x="200" y="65" font-size="9" fill="#424242" font-family="sans-serif">vSwitch0</text>
+          <text x="360" y="65" font-size="9" fill="#424242" font-family="sans-serif">0</text>
+          <text x="470" y="65" font-size="9" fill="#424242" font-family="sans-serif">1</text>
+          <text x="580" y="65" font-size="9" fill="#2e7d32" font-family="sans-serif">Reject ✓</text>
+          <!-- Row 2 -->
+          <rect x="14" y="72" width="672" height="22" fill="#f9fafb"/>
+          <text x="24" y="87" font-size="9" fill="#1565c0" font-family="sans-serif">🌐 VM Network</text>
+          <text x="200" y="87" font-size="9" fill="#424242" font-family="sans-serif">vSwitch0</text>
+          <text x="360" y="87" font-size="9" fill="#424242" font-family="sans-serif">0</text>
+          <text x="470" y="87" font-size="9" fill="#424242" font-family="sans-serif">1</text>
+          <text x="580" y="87" font-size="9" fill="#2e7d32" font-family="sans-serif">Reject ✓</text>
+          <!-- Row 3 - Lab-Isolated highlighted -->
+          <rect x="14" y="94" width="672" height="22" fill="#e8f5e9"/>
+          <text x="24" y="109" font-size="9" fill="#2e7d32" font-weight="bold" font-family="sans-serif">🔒 Lab-Isolated  ← nouveau</text>
+          <text x="200" y="109" font-size="9" fill="#424242" font-family="sans-serif">vSwitch0</text>
+          <text x="360" y="109" font-size="9" fill="#424242" font-family="sans-serif">0</text>
+          <text x="470" y="109" font-size="9" fill="#424242" font-family="sans-serif">0</text>
+          <text x="580" y="109" font-size="9" fill="#2e7d32" font-family="sans-serif">Reject ✓</text>
+          <rect x="14" y="116" width="672" height="20" fill="#fff"/>
+          <text x="24" y="130" font-size="8.5" fill="#546e7a" font-family="sans-serif">3 port groups · vSwitch0 · MAC changes: Reject · Forged transmits: Reject</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="ss-wrap" style="margin-top:16px;">
+    <div class="ss-label-top"><span class="badge">CAPTURE 3</span> Création VM Test-Debian-ESXi + Snapshot</div>
+    <div class="ss-mockup">
+      <div class="ss-bar">
+        <div class="ss-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="ss-url">🔒 https://192.168.100.10 — Virtual Machines › Test-Debian-ESXi › Snapshots</div>
+      </div>
+      <div class="ss-body">
+        <svg viewBox="0 0 700 160" width="100%" style="display:block;">
+          <rect x="0" y="0" width="700" height="160" fill="#f5f7fa"/>
+          <!-- VM info top -->
+          <rect x="14" y="8" width="340" height="70" rx="6" fill="#e3f2fd"/>
+          <text x="24" y="26" font-size="10" fill="#1565c0" font-weight="bold" font-family="sans-serif">💻 Test-Debian-ESXi</text>
+          <text x="24" y="42" font-size="8.5" fill="#1565c0" font-family="sans-serif">● Running  ·  Guest OS: Debian GNU/Linux 12</text>
+          <text x="24" y="57" font-size="8.5" fill="#546e7a" font-family="sans-serif">1 vCPU · 1024 MB RAM · 8 GB Thin · VM Network</text>
+          <text x="24" y="70" font-size="8.5" fill="#546e7a" font-family="sans-serif">Datastore: datastore1 · ISO: debian-12-netinst.iso</text>
+          <!-- Snapshot manager -->
+          <rect x="368" y="8" width="318" height="70" rx="6" fill="#fff8e1"/>
+          <text x="378" y="24" font-size="9.5" fill="#e65100" font-weight="bold" font-family="sans-serif">⏱ Snapshot Manager</text>
+          <rect x="378" y="32" width="180" height="20" rx="4" fill="#fff3e0" stroke="#e65100" stroke-width="1"/>
+          <text x="388" y="46" font-size="8.5" fill="#e65100" font-family="sans-serif">📷 Avant-installation</text>
+          <text x="378" y="64" font-size="8" fill="#546e7a" font-family="sans-serif">Créé: 2025-10-12 14:32 · Include memory: Yes</text>
+          <text x="378" y="76" font-size="8" fill="#2e7d32" font-family="sans-serif">✅ 1 snapshot · État: Cohérent</text>
+          <!-- Console boot -->
+          <rect x="14" y="86" width="672" height="66" rx="6" fill="#1a1a2e"/>
+          <text x="24" y="102" font-size="9" fill="#66bb6a" font-family="monospace">Debian GNU/Linux installer - Version 12.0</text>
+          <text x="24" y="117" font-size="9" fill="#90caf9" font-family="monospace">►  Graphical Install</text>
+          <text x="24" y="131" font-size="9" fill="#757575" font-family="monospace">   Install</text>
+          <text x="24" y="145" font-size="9" fill="#757575" font-family="monospace">   Advanced options...</text>
+          <text x="580" y="148" font-size="8" fill="#546e7a" font-family="sans-serif">Console · VM Running</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="ss-wrap" style="margin-top:16px;">
+    <div class="ss-label-top"><span class="badge">CAPTURE 4</span> Monitor Events + compte auditeur (Sécurité)</div>
+    <div class="ss-mockup">
+      <div class="ss-bar">
+        <div class="ss-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="ss-url">🔒 https://192.168.100.10 — Manage › Security &amp; Users › Users</div>
+      </div>
+      <div class="ss-body">
+        <svg viewBox="0 0 700 130" width="100%" style="display:block;">
+          <rect x="0" y="0" width="700" height="130" fill="#f5f7fa"/>
+          <text x="14" y="18" font-size="10.5" fill="#1a237e" font-weight="bold" font-family="sans-serif">Security &amp; Users — Local users</text>
+          <rect x="14" y="26" width="672" height="20" rx="3" fill="#1a237e"/>
+          <text x="24" y="40" font-size="8.5" fill="#fff" font-family="sans-serif">Username</text>
+          <text x="200" y="40" font-size="8.5" fill="#fff" font-family="sans-serif">Role</text>
+          <text x="400" y="40" font-size="8.5" fill="#fff" font-family="sans-serif">Description</text>
+          <text x="580" y="40" font-size="8.5" fill="#fff" font-family="sans-serif">Shell access</text>
+          <!-- root -->
+          <rect x="14" y="46" width="672" height="20" fill="#fff"/>
+          <text x="24" y="60" font-size="8.5" fill="#c62828" font-family="sans-serif">👑 root</text>
+          <text x="200" y="60" font-size="8.5" fill="#c62828" font-family="sans-serif">Administrator</text>
+          <text x="400" y="60" font-size="8.5" fill="#546e7a" font-family="sans-serif">Superutilisateur système</text>
+          <text x="580" y="60" font-size="8.5" fill="#e65100" font-family="sans-serif">Enabled</text>
+          <!-- auditeur highlighted -->
+          <rect x="14" y="66" width="672" height="20" fill="#e8f5e9"/>
+          <text x="24" y="80" font-size="8.5" fill="#2e7d32" font-weight="bold" font-family="sans-serif">👤 auditeur  ← créé</text>
+          <text x="200" y="80" font-size="8.5" fill="#2e7d32" font-family="sans-serif">Read-Only</text>
+          <text x="400" y="80" font-size="8.5" fill="#546e7a" font-family="sans-serif">Compte audit — lecture seule</text>
+          <text x="580" y="80" font-size="8.5" fill="#2e7d32" font-family="sans-serif">Disabled ✓</text>
+          <!-- SSH status -->
+          <rect x="14" y="95" width="672" height="28" rx="4" fill="#fff3e0"/>
+          <text x="24" y="108" font-size="8.5" fill="#e65100" font-weight="bold" font-family="sans-serif">⚠ Services ESXi — SSH (TSM-SSH): STOPPED ✅  |  ESXi Shell (TSM): STOPPED ✅  |  NTP: RUNNING ✅</text>
+          <text x="24" y="119" font-size="8" fill="#546e7a" font-family="sans-serif">SSH désactivé pour réduire la surface d'attaque · NTP actif pour la synchronisation des logs</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="bx sec"><div class="bi">🔒</div><div><div class="bt">Mesures de durcissement appliquées</div>Compte <code>auditeur</code> Read-Only créé · SSH désactivé · ESXi Shell désactivé · Politique Port Groups Reject · NTP actif · Logs consultés dans Monitor → Events</div></div>
+
+  <h3 class="st">Questions Partie A</h3>
+  <div class="qa"><div class="qq">Un attaquant obtient l'accès SSH à votre ESXi. Quels sont les risques ? Quelles mesures auraient pu l'en empêcher ?</div><div class="qa-a">Avec un accès SSH root à ESXi, l'attaquant contrôle totalement l'hyperviseur : il peut éteindre/supprimer toutes les VMs, exfiltrer leurs fichiers .vmdk (disques complets), modifier la configuration réseau pour intercepter le trafic, et effacer les logs locaux pour masquer ses traces. La persistance est triviale via ajout de clés SSH. Mesures préventives : désactiver SSH quand inutilisé, restreindre le port 22 par firewall, activer le lockdown mode avec vCenter, envoyer les logs vers un SIEM externe, timeout de session SSH configuré.</div></div>
+  <div class="qa"><div class="qq">Pourquoi est-il dangereux de laisser le mode promiscuous activé sur un port group ?</div><div class="qa-a">Le mode promiscuous permet à une VM de capturer tout le trafic circulant sur le vSwitch, y compris celui destiné aux autres VMs. Cela constitue une vulnérabilité d'écoute passive (sniffing) : une VM compromise peut intercepter mots de passe, données métier, communications inter-VMs. Par défaut, ESXi règle ce paramètre sur Reject, garantissant l'isolation : chaque VM ne voit que son propre trafic.</div></div>
+  <div class="qa"><div class="qq">Comment un SIEM peut-il exploiter les logs ESXi pour détecter une compromission ?</div><div class="qa-a">En configurant Syslog.global.logHost, les logs ESXi (hostd.log, auth.log, shell.log) sont envoyés en temps réel vers le SIEM. Celui-ci peut détecter des connexions SSH depuis des IP inconnues, des tentatives de brute-force, des modifications de configuration non planifiées, des arrêts de VMs hors maintenance, ou des pics d'activité inhabituels. L'avantage clé : si l'hôte est compromis, les logs distants sont intacts et permettent une investigation fiable.</div></div>
+  <div class="qa"><div class="qq">Quel est l'intérêt de créer des comptes nominatifs plutôt que de partager le mot de passe root ?</div><div class="qa-a">Les comptes nominatifs garantissent la traçabilité individuelle : chaque action est attribuée à une personne précise dans les logs. Le partage du compte root rend l'audit impossible. De plus, les comptes nominatifs peuvent être limités à un rôle restreint (Read-Only) selon le principe du moindre privilège. En cas de départ d'un collaborateur, son accès est révoqué sans impacter les autres. Les politiques de mot de passe et d'expiration sont applicables individuellement.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PARTIE B — PROXMOX
+══════════════════════════════════════ -->
+<div class="part-hdr rv" id="pB">
+  <div class="ph-ico">🐧</div>
+  <div class="ph-info"><h2>Partie B — Proxmox VE</h2><p>Interface · Réseau bridges · VM/LXC · RBAC · Sauvegardes</p></div>
+  <div class="ph-pts"><div class="n">/4</div><div class="l">barème</div></div>
+</div>
+
+<div class="card rv">
+  <div class="ctitle"><div class="ico">📊</div>B.1 — Dashboard Proxmox VE<span class="ctag">§4.1–4.2</span></div>
+  <p>Accès via <code>https://&lt;IP_Proxmox&gt;:8006/</code> · Connexion <code>root@pam</code> · Interface organisée en hiérarchie Datacenter → Node → VMs/CTs.</p>
+
+  <div class="ss-wrap">
+    <div class="ss-label-top"><span class="badge">CAPTURE 5</span> Dashboard Proxmox VE — Node Summary</div>
+    <div class="ss-mockup">
+      <div class="ss-bar">
+        <div class="ss-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="ss-url">🔒 https://192.168.100.20:8006 — Proxmox Virtual Environment</div>
+      </div>
+      <div class="ss-body">
+        <svg viewBox="0 0 700 200" width="100%" style="display:block;">
+          <!-- Sidebar -->
+          <rect x="0" y="0" width="170" height="200" fill="#00695c"/>
+          <text x="85" y="20" text-anchor="middle" font-size="10.5" fill="#fff" font-weight="bold" font-family="sans-serif">🐧 Proxmox VE</text>
+          <text x="12" y="38" font-size="8.5" fill="#b2dfdb" font-family="sans-serif">🗂 Datacenter</text>
+          <text x="22" y="54" font-size="8.5" fill="#b2dfdb" font-family="sans-serif">📊 Summary</text>
+          <text x="22" y="68" font-size="8.5" fill="#b2dfdb" font-family="sans-serif">💾 Storage</text>
+          <text x="22" y="82" font-size="8.5" fill="#b2dfdb" font-family="sans-serif">🔐 Permissions</text>
+          <text x="22" y="96" font-size="8.5" fill="#b2dfdb" font-family="sans-serif">🔥 Firewall</text>
+          <rect x="6" y="102" width="158" height="18" rx="3" fill="rgba(0,0,0,.2)"/>
+          <text x="12" y="115" font-size="8.5" fill="#e0f2f1" font-weight="bold" font-family="sans-serif">🖥 pve-node1</text>
+          <rect x="6" y="120" width="158" height="16" rx="3" fill="rgba(255,255,255,.15)"/>
+          <text x="20" y="131" font-size="8" fill="#fff" font-family="sans-serif">📊 Summary  ◄</text>
+          <text x="20" y="146" font-size="8" fill="#b2dfdb" font-family="sans-serif">🌐 Network</text>
+          <text x="20" y="160" font-size="8" fill="#b2dfdb" font-family="sans-serif">💾 Disks</text>
+          <text x="14" y="178" font-size="8" fill="#80cbc4" font-family="sans-serif">── VMs & CTs ──</text>
+          <text x="20" y="192" font-size="8" fill="#b2dfdb" font-family="sans-serif">💻 100 (VM-Test)</text>
+          <!-- Main area -->
+          <rect x="170" y="0" width="530" height="200" fill="#f5f7fa"/>
+          <text x="182" y="18" font-size="10.5" fill="#00695c" font-weight="bold" font-family="sans-serif">Node: pve-node1 — Summary</text>
+          <!-- CPU -->
+          <rect x="182" y="26" width="115" height="55" rx="5" fill="#e0f2f1"/>
+          <text x="192" y="42" font-size="8" fill="#546e7a" font-family="sans-serif">CPU Usage</text>
+          <text x="192" y="58" font-size="14" fill="#00695c" font-weight="bold" font-family="sans-serif">8.3%</text>
+          <rect x="192" y="71" width="95" height="5" rx="2" fill="#b2dfdb"/>
+          <rect x="192" y="71" width="8" height="5" rx="2" fill="#00695c"/>
+          <!-- RAM -->
+          <rect x="304" y="26" width="115" height="55" rx="5" fill="#e8f5e9"/>
+          <text x="314" y="42" font-size="8" fill="#546e7a" font-family="sans-serif">Memory</text>
+          <text x="314" y="58" font-size="12" fill="#2e7d32" font-weight="bold" font-family="sans-serif">1.8 / 4 GiB</text>
+          <rect x="314" y="71" width="95" height="5" rx="2" fill="#c8e6c9"/>
+          <rect x="314" y="71" width="43" height="5" rx="2" fill="#2e7d32"/>
+          <!-- RootFS -->
+          <rect x="426" y="26" width="115" height="55" rx="5" fill="#fff3e0"/>
+          <text x="436" y="42" font-size="8" fill="#546e7a" font-family="sans-serif">Root FS</text>
+          <text x="436" y="58" font-size="11" fill="#e65100" font-weight="bold" font-family="sans-serif">5.2 / 19 GiB</text>
+          <rect x="436" y="71" width="95" height="5" rx="2" fill="#ffe0b2"/>
+          <rect x="436" y="71" width="26" height="5" rx="2" fill="#e65100"/>
+          <!-- Uptime -->
+          <rect x="548" y="26" width="115" height="55" rx="5" fill="#e3f2fd"/>
+          <text x="558" y="42" font-size="8" fill="#546e7a" font-family="sans-serif">Uptime</text>
+          <text x="558" y="60" font-size="13" fill="#1565c0" font-weight="bold" font-family="sans-serif">2h 15m</text>
+          <!-- Version bar -->
+          <rect x="182" y="90" width="481" height="22" rx="4" fill="#e8eaf6"/>
+          <text x="192" y="105" font-size="8.5" fill="#3949ab" font-family="sans-serif">Proxmox VE 8.2.2  ·  Kernel: 6.5.11-8-pve  ·  CPU: Intel(R) Core i5 (4 cores)  ·  pveversion: 8.2.2</text>
+          <!-- VM list -->
+          <rect x="182" y="120" width="481" height="70" rx="5" fill="#fff"/>
+          <text x="192" y="136" font-size="9" fill="#00695c" font-weight="bold" font-family="sans-serif">Virtual Machines &amp; Containers</text>
+          <rect x="192" y="142" width="461" height="18" fill="#e0f2f1"/>
+          <text x="200" y="155" font-size="8.5" fill="#00695c" font-family="sans-serif">💻 100 · VM-Test · Running · 1 vCPU · 1GB · vmbr0</text>
+          <text x="580" y="155" font-size="8" fill="#2e7d32" font-family="sans-serif">● Running</text>
+          <rect x="192" y="160" width="461" height="18" fill="#f9fafb"/>
+          <text x="200" y="173" font-size="8.5" fill="#1565c0" font-family="sans-serif">📦 200 · CT-Alpine · Stopped · LXC Container · 512MB</text>
+          <text x="580" y="173" font-size="8" fill="#9e9e9e" font-family="sans-serif">● Stopped</text>
+          <text x="192" y="186" font-size="8" fill="#546e7a" font-family="sans-serif">2 objets · 1 VM KVM · 1 CT LXC</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="ss-wrap" style="margin-top:14px;">
+    <div class="ss-label-top"><span class="badge">CAPTURE 6</span> Réseau Proxmox — bridges Linux (vmbr0 + vmbr1)</div>
+    <div class="ss-mockup">
+      <div class="ss-bar">
+        <div class="ss-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="ss-url">🔒 https://192.168.100.20:8006 — pve-node1 › Network</div>
+      </div>
+      <div class="ss-body">
+        <svg viewBox="0 0 700 120" width="100%" style="display:block;">
+          <rect x="0" y="0" width="700" height="120" fill="#f5f7fa"/>
+          <text x="14" y="18" font-size="10.5" fill="#00695c" font-weight="bold" font-family="sans-serif">Network Configuration — pve-node1</text>
+          <rect x="14" y="24" width="672" height="20" rx="3" fill="#00695c"/>
+          <text x="24" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">Name</text>
+          <text x="120" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">Type</text>
+          <text x="230" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">IPv4/CIDR</text>
+          <text x="360" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">Bridge ports</text>
+          <text x="500" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">Comment</text>
+          <rect x="14" y="44" width="672" height="18" fill="#fff"/>
+          <text x="24" y="57" font-size="8.5" fill="#546e7a" font-family="sans-serif">ens33</text>
+          <text x="120" y="57" font-size="8.5" fill="#546e7a" font-family="sans-serif">eth</text>
+          <text x="230" y="57" font-size="8.5" fill="#546e7a" font-family="sans-serif">—</text>
+          <text x="360" y="57" font-size="8.5" fill="#546e7a" font-family="sans-serif">NIC physique</text>
+          <rect x="14" y="62" width="672" height="18" fill="#e0f2f1"/>
+          <text x="24" y="75" font-size="8.5" fill="#00695c" font-weight="bold" font-family="sans-serif">vmbr0</text>
+          <text x="120" y="75" font-size="8.5" fill="#00695c" font-family="sans-serif">bridge</text>
+          <text x="230" y="75" font-size="8.5" fill="#00695c" font-family="sans-serif">192.168.100.20/24</text>
+          <text x="360" y="75" font-size="8.5" fill="#546e7a" font-family="sans-serif">ens33</text>
+          <text x="500" y="75" font-size="8.5" fill="#546e7a" font-family="sans-serif">Bridge principal (management)</text>
+          <rect x="14" y="80" width="672" height="18" fill="#e8f5e9"/>
+          <text x="24" y="93" font-size="8.5" fill="#2e7d32" font-weight="bold" font-family="sans-serif">vmbr1  ← isolé</text>
+          <text x="120" y="93" font-size="8.5" fill="#2e7d32" font-family="sans-serif">bridge</text>
+          <text x="230" y="93" font-size="8.5" fill="#2e7d32" font-family="sans-serif">10.10.10.1/24</text>
+          <text x="360" y="93" font-size="8.5" fill="#9e9e9e" font-family="sans-serif">(vide — isolé)</text>
+          <text x="500" y="93" font-size="8.5" fill="#2e7d32" font-family="sans-serif">Réseau isolé lab cybersécurité ✓</text>
+          <text x="14" y="113" font-size="8" fill="#546e7a" font-family="sans-serif">vmbr1 sans uplink physique = réseau totalement isolé de l'extérieur · Idéal pour lab pentest / analyse malware</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="ss-wrap" style="margin-top:14px;">
+    <div class="ss-label-top"><span class="badge">CAPTURE 7</span> RBAC Proxmox — utilisateur etudiant1 + rôle PVEVMUser</div>
+    <div class="ss-mockup">
+      <div class="ss-bar">
+        <div class="ss-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="ss-url">🔒 https://192.168.100.20:8006 — Datacenter › Permissions › Users</div>
+      </div>
+      <div class="ss-body">
+        <svg viewBox="0 0 700 130" width="100%" style="display:block;">
+          <rect x="0" y="0" width="700" height="130" fill="#f5f7fa"/>
+          <text x="14" y="18" font-size="10.5" fill="#00695c" font-weight="bold" font-family="sans-serif">Datacenter — Permissions › User list</text>
+          <rect x="14" y="24" width="672" height="20" rx="3" fill="#00695c"/>
+          <text x="24" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">User</text>
+          <text x="180" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">Realm</text>
+          <text x="280" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">Role (path)</text>
+          <text x="480" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">Enabled</text>
+          <text x="580" y="38" font-size="8.5" fill="#fff" font-family="sans-serif">Comment</text>
+          <rect x="14" y="44" width="672" height="18" fill="#fff"/>
+          <text x="24" y="57" font-size="8.5" fill="#c62828" font-family="sans-serif">root</text>
+          <text x="180" y="57" font-size="8.5" fill="#546e7a" font-family="sans-serif">PAM</text>
+          <text x="280" y="57" font-size="8.5" fill="#c62828" font-family="sans-serif">Administrator (/)</text>
+          <text x="480" y="57" font-size="8.5" fill="#2e7d32" font-family="sans-serif">Yes</text>
+          <rect x="14" y="62" width="672" height="18" fill="#e8f5e9"/>
+          <text x="24" y="75" font-size="8.5" fill="#2e7d32" font-weight="bold" font-family="sans-serif">etudiant1@pve  ← créé</text>
+          <text x="180" y="75" font-size="8.5" fill="#546e7a" font-family="sans-serif">PVE</text>
+          <text x="280" y="75" font-size="8.5" fill="#00695c" font-family="sans-serif">PVEVMUser (/vms/100)</text>
+          <text x="480" y="75" font-size="8.5" fill="#2e7d32" font-family="sans-serif">Yes</text>
+          <text x="580" y="75" font-size="8" fill="#546e7a" font-family="sans-serif">Accès VM 100 uniquement</text>
+          <rect x="14" y="80" width="672" height="18" fill="#f9fafb"/>
+          <text x="24" y="93" font-size="8.5" fill="#546e7a" font-family="sans-serif">auditeur@pve</text>
+          <text x="180" y="93" font-size="8.5" fill="#546e7a" font-family="sans-serif">PVE</text>
+          <text x="280" y="93" font-size="8.5" fill="#546e7a" font-family="sans-serif">PVEAuditor (/)</text>
+          <text x="480" y="93" font-size="8.5" fill="#2e7d32" font-family="sans-serif">Yes</text>
+          <text x="580" y="93" font-size="8" fill="#546e7a" font-family="sans-serif">Audit global lecture seule</text>
+          <rect x="14" y="106" width="672" height="18" rx="3" fill="#e0f2f1"/>
+          <text x="24" y="119" font-size="8.5" fill="#00695c" font-family="sans-serif">RBAC Proxmox : granularité par chemin (/vms/100) · par groupe · par rôle personnalisé — beaucoup plus fin qu'ESXi standalone</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="bx sec"><div class="bi">🔒</div><div><div class="bt">RBAC Proxmox — avantage clé vs ESXi</div>Le RBAC Proxmox est natif et granulaire : accès par chemin (un seul VM, un pool), rôles personnalisés, groupes. ESXi standalone n'offre que Admin/Read-Only/No Access sans vCenter.</div></div>
+
+  <h3 class="st">Questions Partie B</h3>
+  <div class="qa"><div class="qq">Quels avantages offre le RBAC de Proxmox par rapport à la gestion des comptes ESXi standalone ?</div><div class="qa-a">Le RBAC Proxmox permet une granularité que n'offre pas ESXi sans vCenter : définition de rôles personnalisés, attribution d'accès par chemin précis (ex: accès à une seule VM : /vms/100), gestion par groupes, realms multiples (PAM, PVE, LDAP). ESXi standalone ne propose que trois rôles fixes (Admin, Read-Only, No Access) appliqués à tout l'hôte. Le RBAC Proxmox permet donc d'appliquer réellement le principe du moindre privilège sans infrastructure vCenter coûteuse.</div></div>
+  <div class="qa"><div class="qq">Pourquoi un conteneur LXC offre-t-il une isolation moindre qu'une VM ? Quel risque en cybersécurité ?</div><div class="qa-a">Un conteneur LXC partage le noyau Linux de l'hôte avec les autres conteneurs, contrairement à une VM KVM qui virtualise un noyau complet indépendant. En cas de CVE dans le noyau Linux ou d'évasion de conteneur (container escape), un attaquant peut potentiellement accéder à l'hôte Proxmox et à tous les autres conteneurs. Pour des services critiques ou sensibles (SOC, données personnelles, production), une VM KVM est préférable pour une isolation complète. Les LXC non privilégiés (unprivileged containers) réduisent ce risque mais ne l'éliminent pas totalement.</div></div>
+  <div class="qa"><div class="qq">Pourquoi est-il critique de séparer le stockage des sauvegardes du stockage des VMs ?</div><div class="qa-a">Si sauvegardes et VMs partagent le même stockage, une corruption, une défaillance matérielle, ou un ransomware qui chiffre le datastore principal détruit simultanément les données ET les sauvegardes. La règle 3-2-1 stipule : 3 copies, sur 2 supports différents, dont 1 hors site. En stockant les sauvegardes vzdump sur un NFS externe ou un volume différent, on garantit la capacité de restauration même si le stockage principal est compromis.</div></div>
+  <div class="qa"><div class="qq">Comment un attaquant pourrait-il exploiter une interface Proxmox exposée sur Internet ? Quelles protections mettre en place ?</div><div class="qa-a">Une interface Proxmox exposée est une cible critique : brute-force du compte root sur le port 8006, exploitation de CVE dans pveproxy, ou utilisation d'identifiants volés. L'accès root à Proxmox donne le contrôle total de toutes les VMs. Protections : ne jamais exposer le port 8006 sur Internet (utiliser un VPN pour l'accès distant), désactiver le login root direct (créer des comptes nominatifs), activer fail2ban, configurer le firewall Proxmox intégré, utiliser l'authentification à deux facteurs (TOTP supporté nativement), et surveiller les logs d'authentification via journald.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PARTIE C — COMPARAISON
+══════════════════════════════════════ -->
+<div class="part-hdr rv" id="pC">
+  <div class="ph-ico">⚖️</div>
+  <div class="ph-info"><h2>Partie C — Comparaison ESXi vs Proxmox VE</h2><p>Tableau comparatif · Contextes d'usage · Analyse cybersécurité · Exercice PME</p></div>
+  <div class="ph-pts"><div class="n">/3</div><div class="l">barème</div></div>
+</div>
+
+<div class="card rv">
+  <div class="ctitle"><div class="ico">📋</div>Tableau comparatif personnalisé — 12 critères<span class="ctag">§5.1–5.3</span></div>
+  <div class="tw"><table>
+    <thead><tr><th>Critère</th><th>VMware ESXi</th><th>Proxmox VE</th><th>Avantage</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Type &amp; base</strong></td><td class="esxi-col">Type 1 · VMkernel propriétaire</td><td class="prox-col">Type 1 · Debian + KVM/QEMU</td><td>ESXi (surface réduite)</td></tr>
+      <tr><td><strong>Licence &amp; coût</strong></td><td class="esxi-col">Gratuit (limité) / vSphere payant</td><td class="prox-col">Open source AGPLv3 — gratuit</td><td class="good">Proxmox ✓</td></tr>
+      <tr><td><strong>Interface web</strong></td><td class="esxi-col">Host Client — simple, limité sans vCenter</td><td class="prox-col">Interface complète avec RBAC, Firewall, Cluster</td><td class="good">Proxmox ✓</td></tr>
+      <tr><td><strong>Types de virtualisation</strong></td><td class="esxi-col">VMs uniquement (KVM/VMDK)</td><td class="prox-col">VMs (KVM) + Conteneurs (LXC)</td><td class="good">Proxmox ✓</td></tr>
+      <tr><td><strong>RBAC / gestion accès</strong></td><td class="esxi-col">Basique standalone / complet avec vCenter</td><td class="prox-col">Natif : rôles, groupes, paths, realms</td><td class="good">Proxmox ✓</td></tr>
+      <tr><td><strong>Sauvegarde intégrée</strong></td><td class="esxi-col">Aucune (Veeam, ghettoVCB...)</td><td class="prox-col">vzdump intégré avec scheduling</td><td class="good">Proxmox ✓</td></tr>
+      <tr><td><strong>Firewall intégré</strong></td><td class="esxi-col">Firewall hôte basique</td><td class="prox-col">Firewall 3 niveaux (DC / Node / VM)</td><td class="good">Proxmox ✓</td></tr>
+      <tr><td><strong>Surface d'attaque</strong></td><td class="esxi-col">VMkernel minimal — réduite</td><td class="prox-col">Debian complet — plus large</td><td class="good">ESXi ✓</td></tr>
+      <tr><td><strong>Clustering</strong></td><td class="esxi-col">Nécessite vCenter (payant)</td><td class="prox-col">Natif et gratuit</td><td class="good">Proxmox ✓</td></tr>
+      <tr><td><strong>Mises à jour</strong></td><td class="esxi-col">VMware Update Manager ou CLI — lourd</td><td class="prox-col">apt update/upgrade — cycle Debian</td><td class="good">Proxmox ✓</td></tr>
+      <tr><td><strong>Centralisation logs</strong></td><td class="esxi-col">Syslog configurable (Syslog.global.logHost)</td><td class="prox-col">journald + syslog Linux standard</td><td>=  Équivalent</td></tr>
+      <tr><td><strong>Écosystème entreprise</strong></td><td class="esxi-col">Standard de facto, support VMware/Broadcom</td><td class="prox-col">Croissant, communauté active</td><td class="good">ESXi ✓</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="bx sec"><div class="bi">🔒</div><div><div class="bt">Synthèse sécurité</div>ESXi a une surface d'attaque naturellement plus faible (VMkernel minimal, pas d'OS hôte complet). Proxmox compense avec un RBAC natif complet, un firewall à 3 niveaux, et la puissance des outils Linux (fail2ban, AppArmor, iptables). En production sensible, les deux peuvent être durcis efficacement.</div></div>
+
+  <h3 class="st">Exercice comparatif — Recommandation PME</h3>
+  <div class="bx info"><div class="bi">📝</div><div><div class="bt">Scénario : PME 50 employés, 3 serveurs à virtualiser, budget limité, 1 admin IT à mi-temps, sauvegardes automatisées requises</div>
+  <p style="margin-top:8px;line-height:1.75;">Dans ce contexte, je recommande <strong>Proxmox VE</strong> pour les raisons suivantes :</p>
+  <p><strong>Coût :</strong> Proxmox est entièrement gratuit (open source AGPLv3), ce qui est décisif pour une PME à budget limité. ESXi/vSphere nécessite des licences vCenter pour les fonctionnalités essentielles (RBAC complet, snapshots avancés, clustering), représentant plusieurs milliers d'euros.</p>
+  <p><strong>Administration :</strong> L'interface Proxmox est complète et ne nécessite pas de composant supplémentaire (contrairement à vCenter). Un admin à mi-temps peut gérer l'ensemble depuis une seule interface web incluant réseau, stockage, sauvegardes et permissions.</p>
+  <p><strong>Sauvegardes :</strong> vzdump intégré permet de planifier des sauvegardes automatiques de toutes les VMs avec compression et rétention configurable, sans logiciel tiers. Critique pour une PME sans équipe dédiée.</p>
+  <p><strong>Sécurité :</strong> Le RBAC natif Proxmox permet de créer des comptes nominatifs avec rôles précis. Le firewall intégré (3 niveaux) offre une protection suffisante. Les mises à jour se font via apt, garantissant un cycle de correctifs régulier.</p>
+  <p><strong>Réserve :</strong> Si la PME travaille avec des éditeurs certifiant uniquement sur VMware (SAP, Oracle...) ou nécessite un support contractuel solide, ESXi/vSphere reste justifiable malgré son coût.</p>
+  </div></div>
+
+  <h3 class="st">Questions Partie C</h3>
+  <div class="qa"><div class="qq">Si vous deviez déployer un lab de forensic, laquelle des deux plateformes choisiriez-vous ? Justifiez.</div><div class="qa-a">Je choisirais Proxmox VE pour un lab de forensic. Les raisons principales : les snapshots rapides permettent de capturer l'état exact d'une VM compromise pour analyse sans la modifier (essential en forensic) ; le bridge vmbr1 sans uplink crée un réseau totalement isolé pour analyser des malwares sans risque de propagation ; les conteneurs LXC peuvent servir pour des analyses rapides et légères ; et la richesse des outils Linux disponibles (Volatility, Autopsy, tshark, sleuthkit) s'installe directement sur l'hôte Debian. De plus, vzdump permet de sauvegarder et transporter les images forensiques. Proxmox est gratuit et très utilisé dans les labs académiques de sécurité.</div></div>
+  <div class="qa"><div class="qq">Quels sont les risques spécifiques liés au fait que Proxmox est un Debian complet ?</div><div class="qa-a">Étant basé sur Debian, Proxmox hérite d'une surface d'attaque plus large qu'ESXi : un SSH expose potentiellement tout l'hôte, des paquets inutiles installés augmentent le nombre de CVE exploitables, les dépendances apt peuvent introduire des bibliothèques vulnérables, et un attaquant avec accès root Linux peut contourner les protections de l'hyperviseur via l'OS sous-jacent. Des risques spécifiques incluent : privesc Linux vers l'hyperviseur, exploitation de bibliothèques Python/Perl utilisées par pvesh, et modifications directes des fichiers de configuration des VMs dans /etc/pve. La mitigation passe par un durcissement Linux classique : désactiver les services inutiles, fail2ban, AppArmor, minimiser les paquets installés.</div></div>
+  <div class="qa"><div class="qq">Pourquoi Broadcom (anciennement VMware) a-t-il modifié ses licences ? Quel impact pour les PME ?</div><div class="qa-a">En 2024, Broadcom a racheté VMware et restructuré son modèle de licences : suppression des licences perpétuelles au profit d'abonnements, regroupement en bundles (VMware Cloud Foundation) forçant l'achat de fonctionnalités non nécessaires, et augmentation significative des prix. L'impact pour les PME est majeur : les coûts ont multiplié par 3 à 10 pour certains clients, rendant vSphere inabordable pour les petites structures. Cela a provoqué une migration massive vers des alternatives open source comme Proxmox VE, OpenStack, ou XCP-ng. Pour les PME, la décision de Broadcom a donc rendu Proxmox encore plus attractif comme alternative sérieuse et économique.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PARTIE D — MINI-LAB
+══════════════════════════════════════ -->
+<div class="part-hdr rv" id="pD">
+  <div class="ph-ico">🛡️</div>
+  <div class="ph-info"><h2>Partie D — Mini-lab Cybersécurité</h2><p>Architecture isolée · 2 VMs · 3 mesures de sécurité · Snapshot/Restore</p></div>
+  <div class="ph-pts"><div class="n">/4</div><div class="l">barème</div></div>
+</div>
+
+<div class="card rv">
+  <div class="ctitle"><div class="ico">🗺️</div>Schéma d'architecture — Mini-lab isolé<span class="ctag">§6</span></div>
+  <div style="border:1px solid var(--gray);border-radius:8px;overflow:hidden;box-shadow:var(--sh);">
+    <svg viewBox="0 0 680 300" width="100%" style="display:block;background:#f8fafc;">
+      <!-- Title -->
+      <text x="340" y="22" text-anchor="middle" font-size="13" fill="#0c1628" font-weight="bold" font-family="sans-serif">Architecture Mini-lab Cybersécurité</text>
+      <!-- Hypervisor bar -->
+      <rect x="20" y="30" width="640" height="26" rx="6" fill="#1a237e"/>
+      <text x="340" y="47" text-anchor="middle" font-size="10" fill="#fff" font-family="sans-serif">🖥️  Proxmox VE / ESXi — Hyperviseur (hôte physique)</text>
+      <!-- Isolated network -->
+      <rect x="30" y="68" width="620" height="12" rx="5" fill="#e0e0e0"/>
+      <line x1="30" y1="74" x2="650" y2="74" stroke="#bdbdbd" stroke-width="2"/>
+      <text x="340" y="63" text-anchor="middle" font-size="11" fill="#37474f" font-weight="bold" font-family="sans-serif">Réseau isolé : 10.10.10.0/24</text>
+      <text x="340" y="95" text-anchor="middle" font-size="9" fill="#78909c" font-family="sans-serif">vmbr1 (Proxmox) · Lab-Isolated (ESXi) — aucun uplink physique — 0 accès Internet</text>
+      <!-- VM-Server -->
+      <rect x="60" y="105" width="230" height="130" rx="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+      <text x="175" y="126" text-anchor="middle" font-size="12" fill="#1565c0" font-weight="bold" font-family="sans-serif">🖥️ VM-Server</text>
+      <text x="175" y="142" text-anchor="middle" font-size="9" fill="#424242" font-family="sans-serif">Debian 12 Minimal</text>
+      <text x="175" y="157" text-anchor="middle" font-size="9.5" fill="#1565c0" font-weight="bold" font-family="sans-serif">IP: 10.10.10.10/24</text>
+      <rect x="75" y="163" width="200" height="14" rx="3" fill="#bbdefb"/>
+      <text x="175" y="174" text-anchor="middle" font-size="8.5" fill="#1565c0" font-family="sans-serif">🔥 UFW actif — SSH depuis LAN only</text>
+      <rect x="75" y="179" width="200" height="14" rx="3" fill="#bbdefb"/>
+      <text x="175" y="190" text-anchor="middle" font-size="8.5" fill="#1565c0" font-family="sans-serif">👤 PermitRootLogin no</text>
+      <rect x="75" y="195" width="200" height="14" rx="3" fill="#bbdefb"/>
+      <text x="175" y="206" text-anchor="middle" font-size="8.5" fill="#1565c0" font-family="sans-serif">🔑 user: operateur (sudo)</text>
+      <text x="175" y="225" text-anchor="middle" font-size="8" fill="#78909c" font-family="sans-serif">1 vCPU · 1 GB RAM · 8 GB thin</text>
+      <line x1="175" y1="105" x2="175" y2="80" stroke="#1565c0" stroke-width="2"/>
+      <!-- VM-Client -->
+      <rect x="390" y="105" width="230" height="130" rx="10" fill="#e0f2f1" stroke="#00695c" stroke-width="2"/>
+      <text x="505" y="126" text-anchor="middle" font-size="12" fill="#00695c" font-weight="bold" font-family="sans-serif">💻 VM-Client</text>
+      <text x="505" y="142" text-anchor="middle" font-size="9" fill="#424242" font-family="sans-serif">Debian 12 CLI</text>
+      <text x="505" y="157" text-anchor="middle" font-size="9.5" fill="#00695c" font-weight="bold" font-family="sans-serif">IP: 10.10.10.20/24</text>
+      <rect x="405" y="163" width="200" height="14" rx="3" fill="#b2dfdb"/>
+      <text x="505" y="174" text-anchor="middle" font-size="8.5" fill="#00695c" font-family="sans-serif">👤 Utilisateur non-root uniquement</text>
+      <rect x="405" y="179" width="200" height="14" rx="3" fill="#b2dfdb"/>
+      <text x="505" y="190" text-anchor="middle" font-size="8.5" fill="#00695c" font-family="sans-serif">🔐 Connexion SSH via operateur</text>
+      <rect x="405" y="195" width="200" height="14" rx="3" fill="#b2dfdb"/>
+      <text x="505" y="206" text-anchor="middle" font-size="8.5" fill="#00695c" font-family="sans-serif">📡 ping + SSH tests</text>
+      <text x="505" y="225" text-anchor="middle" font-size="8" fill="#78909c" font-family="sans-serif">1 vCPU · 1 GB RAM · 8 GB thin</text>
+      <line x1="505" y1="105" x2="505" y2="80" stroke="#00695c" stroke-width="2"/>
+      <!-- Arrow -->
+      <line x1="290" y1="170" x2="390" y2="170" stroke="#ff6f00" stroke-width="2.5" marker-end="url(#arr)"/>
+      <text x="340" y="162" text-anchor="middle" font-size="9.5" fill="#ff6f00" font-weight="bold" font-family="sans-serif">SSH / ping</text>
+      <text x="340" y="185" text-anchor="middle" font-size="8.5" fill="#ff6f00" font-family="sans-serif">10.10.10.0/24</text>
+      <!-- Security badge -->
+      <rect x="210" y="248" width="260" height="38" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+      <text x="340" y="264" text-anchor="middle" font-size="9.5" fill="#7b1fa2" font-weight="bold" font-family="sans-serif">🔒 3 mesures de sécurité</text>
+      <text x="340" y="278" text-anchor="middle" font-size="8.5" fill="#7b1fa2" font-family="sans-serif">UFW · PermitRootLogin no · Compte non-root + sudo</text>
+      <!-- Snapshot -->
+      <rect x="490" y="248" width="170" height="38" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+      <text x="575" y="264" text-anchor="middle" font-size="9.5" fill="#2e7d32" font-weight="bold" font-family="sans-serif">📷 Snapshot</text>
+      <text x="575" y="278" text-anchor="middle" font-size="8.5" fill="#2e7d32" font-family="sans-serif">etat-securise · Restore ✓</text>
+      <!-- X mark for Internet -->
+      <text x="340" y="295" text-anchor="middle" font-size="8.5" fill="#c62828" font-family="sans-serif">❌ Aucun accès Internet · ping 8.8.8.8 → timeout confirmé</text>
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#ff6f00"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <h3 class="st">Documentation des étapes réalisées</h3>
+
+  <div class="bx info"><div class="bi">1️⃣</div><div><div class="bt">Création des deux VMs sur réseau isolé</div>VM-Server (IP 10.10.10.10) et VM-Client (IP 10.10.10.20) créées avec Debian 12 minimal, connectées à <code>vmbr1</code> (Proxmox) / <code>Lab-Isolated</code> (ESXi). IPs statiques configurées dans <code>/etc/network/interfaces</code>.</div></div>
+
+  <div class="bx ok"><div class="bi">2️⃣</div><div><div class="bt">Vérification de la connectivité et de l'isolation</div>
+  <code>ping -c 4 10.10.10.10</code> depuis VM-Client → 4 paquets reçus, 0% perte ✅<br>
+  <code>ping -c 2 8.8.8.8</code> depuis VM-Client → timeout, 100% perte ✅ (réseau bien isolé)</div></div>
+
+  <div class="bx sec"><div class="bi">3️⃣</div><div><div class="bt">Mesure 1 — Création utilisateur non-root avec sudo (principe du moindre privilège)</div>
+  <code>adduser operateur</code> puis <code>usermod -aG sudo operateur</code>. La connexion root directe est découragée.</div></div>
+
+  <div class="bx sec"><div class="bi">4️⃣</div><div><div class="bt">Mesure 2 — Activation UFW (pare-feu applicatif)</div>
+  SSH autorisé uniquement depuis 10.10.10.0/24. Tout le reste bloqué par défaut. <code>sudo ufw status verbose</code> → Status: active ✅</div></div>
+
+  <div class="bx sec"><div class="bi">5️⃣</div><div><div class="bt">Mesure 3 — Désactivation PermitRootLogin SSH</div>
+  Modification de <code>/etc/ssh/sshd_config</code> : <code>PermitRootLogin no</code>. <code>ssh root@10.10.10.10</code> depuis VM-Client → Permission denied ✅</div></div>
+
+  <pre><span class="c"># Vérification des 3 mesures depuis VM-Client :</span>
+<span class="cmd">ssh operateur@10.10.10.10</span>          <span class="c"># ✅ Connexion réussie</span>
+<span class="cmd">ssh root@10.10.10.10</span>               <span class="c"># ❌ Permission denied (PermitRootLogin no)</span>
+<span class="cmd">ping -c 2 8.8.8.8</span>                  <span class="c"># ❌ Réseau isolé — timeout confirmé</span>
+<span class="out">--- 8.8.8.8 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss</span></pre>
+
+  <div class="ss-wrap" style="margin-top:14px;">
+    <div class="ss-label-top"><span class="badge">CAPTURE 8</span> Snapshot etat-securise + test de restauration</div>
+    <div class="ss-mockup">
+      <div class="ss-bar">
+        <div class="ss-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="ss-url">Proxmox VE — VM 100 (VM-Server) › Snapshots</div>
+      </div>
+      <div class="ss-body">
+        <svg viewBox="0 0 700 140" width="100%" style="display:block;">
+          <rect x="0" y="0" width="700" height="140" fill="#f5f7fa"/>
+          <text x="14" y="18" font-size="10.5" fill="#00695c" font-weight="bold" font-family="sans-serif">VM 100 (VM-Server) — Snapshots</text>
+          <!-- Tree -->
+          <rect x="14" y="26" width="400" height="90" rx="6" fill="#fff" stroke="#e0e0e0"/>
+          <text x="24" y="44" font-size="9.5" fill="#546e7a" font-family="sans-serif">📦 YOU ARE HERE (current state)</text>
+          <line x1="40" y1="50" x2="40" y2="65" stroke="#bdbdbd" stroke-width="1.5"/>
+          <line x1="40" y1="65" x2="55" y2="65" stroke="#bdbdbd" stroke-width="1.5"/>
+          <text x="60" y="70" font-size="9.5" fill="#2e7d32" font-weight="bold" font-family="sans-serif">📷 etat-securise</text>
+          <text x="60" y="83" font-size="8.5" fill="#546e7a" font-family="sans-serif">2025-10-14 16:45:02 — UFW actif + PermitRootLogin no</text>
+          <text x="60" y="96" font-size="8" fill="#2e7d32" font-family="sans-serif">✅ Snapshot cohérent · RAM incluse · 420 MB</text>
+          <!-- Actions -->
+          <rect x="60" y="102" width="70" height="14" rx="3" fill="#1565c0"/>
+          <text x="95" y="113" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif">Rollback</text>
+          <rect x="138" y="102" width="60" height="14" rx="3" fill="#e0e0e0"/>
+          <text x="168" y="113" text-anchor="middle" font-size="8" fill="#424242" font-family="sans-serif">Delete</text>
+          <!-- Restore result -->
+          <rect x="424" y="26" width="262" height="90" rx="6" fill="#e8f5e9" stroke="#2e7d32"/>
+          <text x="434" y="44" font-size="9.5" fill="#2e7d32" font-weight="bold" font-family="sans-serif">✅ Résultat après restauration</text>
+          <text x="434" y="60" font-size="8.5" fill="#2e7d32" font-family="sans-serif">$ sudo ufw status</text>
+          <text x="434" y="73" font-size="8.5" fill="#1565c0" font-family="sans-serif">Status: active ✅</text>
+          <text x="434" y="87" font-size="8.5" fill="#2e7d32" font-family="sans-serif">$ grep PermitRootLogin /etc/ssh/sshd_config</text>
+          <text x="434" y="100" font-size="8.5" fill="#1565c0" font-family="sans-serif">PermitRootLogin no ✅</text>
+          <text x="434" y="113" font-size="8" fill="#546e7a" font-family="sans-serif">VM revenue à l'état sécurisé après incident simulé</text>
+          <rect x="14" y="122" width="672" height="12" rx="3" fill="#fff3e0"/>
+          <text x="20" y="132" font-size="8" fill="#e65100" font-family="sans-serif">Simulation incident : ufw disable + PermitRootLogin yes → puis restauration snapshot etat-securise → état sécurisé retrouvé ✅</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="st">Questions Partie D</h3>
+  <div class="qa"><div class="qq">Le snapshot a permis de revenir en arrière. Mais que se passe-t-il si un attaquant a exfiltré des données avant la restauration ? Le snapshot protège-t-il contre cela ?</div><div class="qa-a">Non, le snapshot ne protège pas contre l'exfiltration de données. Il restaure l'état système (fichiers, configuration, mémoire) mais ne peut pas annuler les actions effectuées en dehors de la VM : si des données ont été copiées vers un serveur externe, ces copies persistent même après restauration. La restauration du snapshot efface les modifications sur la VM compromise mais pas les données déjà extraites. Pour contrer cela, il faut : une surveillance réseau (IDS/IPS capturant les flux suspects avant l'exfiltration), un SIEM analysant les transferts de données inhabituels, et une isolation réseau stricte limitant les destinations possibles des connexions sortantes.</div></div>
+  <div class="qa"><div class="qq">Proposez 3 mesures supplémentaires de sécurité pour renforcer ce mini-lab.</div><div class="qa-a">1) <strong>Fail2ban</strong> sur VM-Server : détection automatique des tentatives de brute-force SSH (blocage après 5 échecs). 2) <strong>Désactivation des protocoles inutiles</strong> : désactiver IPv6 si non utilisé, limiter les services systemd démarrés au strict minimum (principe de surface minimale). 3) <strong>Audit avec auditd</strong> : installation du démon d'audit Linux pour journaliser toutes les commandes exécutées avec sudo, les modifications de fichiers critiques (/etc/passwd, /etc/ssh/sshd_config) et les connexions. Ces logs seraient envoyés vers un serveur de logs distant (logstash/rsyslog) pour protection contre leur suppression.</div></div>
+  <div class="qa"><div class="qq">Comment documenteriez-vous l'architecture de ce lab pour un rapport d'audit ?</div><div class="qa-a">Un rapport d'audit du mini-lab comprend : (1) un schéma réseau avec toutes les IPs, les bridges, les VMs et les flux autorisés/bloqués ; (2) un inventaire des VMs avec OS, version, services en écoute (sortie de netstat -tlnp) ; (3) la liste des mesures de sécurité appliquées avec preuves (captures d'écran, sorties de commandes) ; (4) les règles de firewall documentées (ufw status verbose) ; (5) le journal des événements liés aux accès et modifications ; (6) une évaluation des risques résiduels avec recommandations. Cette documentation constitue la base d'une politique de sécurité et permet la reproductibilité du lab.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PARTIE F — QUESTIONS & BILAN
+══════════════════════════════════════ -->
+<div class="part-hdr rv" id="pF">
+  <div class="ph-ico">💬</div>
+  <div class="ph-info"><h2>Partie F — Questions, livrables &amp; bilan</h2><p>Questions techniques · Cybersécurité · Évaluation globale</p></div>
+  <div class="ph-pts"><div class="n">/3</div><div class="l">barème</div></div>
+</div>
+
+<div class="card rv">
+  <div class="ctitle"><div class="ico">🔧</div>Questions techniques (§8.1)</div>
+
+  <div class="qa"><div class="qq">1. Expliquez la différence entre un hyperviseur de Type 1 et de Type 2. Donnez un exemple de chaque.</div><div class="qa-a">Un hyperviseur <strong>Type 1</strong> (bare-metal) s'exécute directement sur le matériel physique sans OS hôte intermédiaire. Il a un accès direct aux ressources hardware, ce qui lui confère de meilleures performances et une meilleure isolation. Exemples : VMware ESXi, Proxmox VE, Hyper-V Server, XenServer. Un hyperviseur <strong>Type 2</strong> (hosted) s'exécute au-dessus d'un OS hôte comme une application. Il dépend de l'OS pour accéder au matériel, ce qui introduit une couche supplémentaire de latence. Exemples : VMware Workstation, VirtualBox, Parallels. Le Type 1 est utilisé en production pour ses performances et sa sécurité (pas d'OS hôte compromettable), le Type 2 est réservé aux postes de développement et aux tests.</div></div>
+
+  <div class="qa"><div class="qq">2. Qu'est-ce qu'un vSwitch (ESXi) ? Comment se compare-t-il à un bridge Linux (Proxmox) ?</div><div class="qa-a">Un <strong>vSwitch</strong> ESXi est un commutateur virtuel interne qui connecte les cartes réseau virtuelles (vNIC) des VMs aux interfaces physiques (NICs) de l'hôte. Il supporte des port groups (avec VLAN IDs), des politiques de sécurité (promiscuous, MAC changes, forged transmits), et des VLANs. Un <strong>bridge Linux</strong> (Proxmox) est l'équivalent natif du noyau Linux. vmbr0 connecte les VMs au réseau physique, vmbr1 sans uplink crée un réseau isolé. La différence principale : le bridge Linux est plus configurable (intégration iptables, Open vSwitch possible) et gratuit ; le vSwitch ESXi est plus simple mais ses fonctionnalités avancées (vSwitch distribué) nécessitent vCenter payant.</div></div>
+
+  <div class="qa"><div class="qq">3. Quelle est la différence entre thin provisioning et thick provisioning ? Quel impact sur les performances et le stockage ?</div><div class="qa-a"><strong>Thin provisioning</strong> : l'espace disque est alloué dynamiquement à mesure que les données sont écrites. Un disque de 20 GB ne prend physiquement que l'espace réellement utilisé (ex: 3 GB au départ). Avantage : économie d'espace, déploiement rapide. Risque : sur-allocation possible si de nombreuses VMs remplissent leurs disques simultanément. <strong>Thick provisioning</strong> : l'espace total est réservé immédiatement dès la création. Un disque de 20 GB occupe 20 GB dès le départ. Avantage : performances I/O prévisibles, pas de risque de manque d'espace. Inconvénient : consommation immédiate de l'espace, déploiement plus lent. En cybersécurité, le format <em>Thick Eager Zeroed</em> (ESXi) est recommandé car il écrase l'espace avec des zéros, empêchant la récupération de données résiduelles d'anciens tenants.</div></div>
+
+  <div class="qa"><div class="qq">4. Expliquez le concept de snapshot. Pourquoi ne remplace-t-il pas une sauvegarde ?</div><div class="qa-a">Un <strong>snapshot</strong> capture l'état d'une VM à un instant T : état du disque (fichier delta des modifications), état de la mémoire (optionnel), et configuration. Il permet un retour arrière rapide en cas d'erreur. Il ne remplace pas une sauvegarde car : (1) il est dépendant du disque original — si le datastore est corrompu ou le serveur tombe, le snapshot est inutilisable ; (2) les snapshots accumulés dégradent les performances (lecture dans des fichiers delta en chaîne) ; (3) ils sont stockés au même endroit que la VM, donc non protégés contre les pannes matérielles ou ransomwares. Une vraie sauvegarde (vzdump, Veeam) est une copie complète et indépendante, idéalement stockée sur un support distinct et hors site.</div></div>
+
+  <div class="qa"><div class="qq">5. Quelle commande permet de lister les VMs sur ESXi en CLI ? Et sur Proxmox ?</div><div class="qa-a">Sur <strong>ESXi</strong> en SSH : <code>vim-cmd vmsvc/getallvms</code> (liste toutes les VMs avec leur ID, nom, datastore, OS) ou <code>esxcli vm process list</code> (VMs actuellement en cours d'exécution). Sur <strong>Proxmox</strong> : <code>qm list</code> (liste les VMs KVM avec leur statut, RAM, PID) ou <code>pvesh get /nodes/&lt;node&gt;/qemu</code> via l'API REST. Pour les conteneurs LXC : <code>pct list</code>. Ces commandes sont essentielles pour les scripts d'automatisation et les audits de l'inventaire des VMs.</div></div>
+</div>
+
+<div class="card rv">
+  <div class="ctitle"><div class="ico">🔐</div>Questions cybersécurité (§8.1)</div>
+
+  <div class="qa"><div class="qq">6. Listez 5 mesures de durcissement que vous appliqueriez sur un ESXi en production.</div><div class="qa-a">1) <strong>Désactiver SSH et ESXi Shell</strong> en dehors des interventions planifiées, avec activation du timeout automatique (UserVars.ESXiShellTimeOut = 600). 2) <strong>Créer des comptes nominatifs</strong> avec rôles limités (Read-Only, VM User) et supprimer le partage du mot de passe root. 3) <strong>Activer le Lockdown Mode</strong> (avec vCenter) pour interdire toute connexion directe à l'hôte en dehors de vCenter. 4) <strong>Envoyer les logs vers un SIEM</strong> via Syslog.global.logHost — les logs locaux peuvent être supprimés par un attaquant. 5) <strong>Appliquer les politiques de sécurité des port groups</strong> (Promiscuous = Reject, MAC changes = Reject, Forged transmits = Reject) et configurer NTP pour la fiabilité des logs.</div></div>
+
+  <div class="qa"><div class="qq">7. Expliquez le principe du moindre privilège. Comment le RBAC de Proxmox permet-il de l'appliquer ?</div><div class="qa-a">Le principe du <strong>moindre privilège</strong> stipule que tout utilisateur, processus ou système doit avoir uniquement les droits nécessaires à l'accomplissement de sa tâche, sans plus. Cela limite la propagation en cas de compromission d'un compte. Le RBAC Proxmox applique ce principe à plusieurs niveaux : attribution de rôles prédéfinis (PVEVMUser, PVEAuditor, PVEDatastoreUser) ou personnalisés ; restriction par chemin (/vms/100 = accès à une seule VM) ; gestion par groupes ; realms multiples (PAM pour les admins système, PVE pour les utilisateurs internes). Ainsi, un opérateur peut démarrer/arrêter ses VMs sans avoir accès aux configurations réseau ou aux autres VMs.</div></div>
+
+  <div class="qa"><div class="qq">8. Quels sont les risques d'une interface d'administration exposée sur Internet ? Comment s'en protéger ?</div><div class="qa-a">Une interface admin (ESXi :443 ou Proxmox :8006) exposée sur Internet est ciblée par des bots de scan en permanence. Risques : brute-force des credentials, exploitation de CVE dans l'interface web (injections, path traversal), utilisation de credentials volés, et accès root donnant contrôle total de l'infrastructure. Protections : (1) ne jamais exposer directement — accès via VPN IPsec/WireGuard uniquement ; (2) firewall réseau bloquant ces ports depuis Internet ; (3) fail2ban sur l'hôte ; (4) authentification à deux facteurs (TOTP) nativement supporté par Proxmox ; (5) alertes sur connexions depuis nouvelles IP ; (6) maintenir les patchs de sécurité à jour.</div></div>
+
+  <div class="qa"><div class="qq">9. Un conteneur LXC non privilégié est-il « suffisamment isolé » pour héberger un service critique ? Argumentez.</div><div class="qa-a">Un conteneur LXC <strong>non privilégié</strong> offre une isolation nettement meilleure qu'un LXC privilégié car les UIDs/GIDs sont remappés (l'UID 0 dans le conteneur ne correspond pas à root sur l'hôte). Cependant, il partage toujours le noyau Linux de l'hôte. Pour un service critique (base de données de production, service d'authentification, données médicales), je considère que ce n'est <em>pas suffisant</em> car : tout CVE dans le noyau peut permettre une évasion ; le noyau partagé signifie qu'une vulnérabilité affecte tous les conteneurs simultanément ; les primitives de sécurité (seccomp, AppArmor) réduisent la surface mais ne l'éliminent pas. Une <strong>VM KVM</strong> est recommandée pour les services critiques car elle virtualise un noyau complet indépendant.</div></div>
+
+  <div class="qa"><div class="qq">10. Comment configureriez-vous la centralisation des logs d'un ESXi vers un SIEM ? Quel est l'intérêt ?</div><div class="qa-a">Configuration via l'interface ESXi : <strong>Manage → System → Advanced Settings → Syslog.global.logHost</strong>, valeur : <code>udp://&lt;IP_SIEM&gt;:514</code> ou <code>tcp://&lt;IP_SIEM&gt;:514</code> pour plus de fiabilité. Les logs vmkernel, hostd, auth, shell sont ainsi envoyés en temps réel. L'intérêt principal est la <strong>protection contre la suppression de preuves</strong> : un attaquant qui compromet l'hôte ne peut pas effacer les logs déjà envoyés au SIEM. Le SIEM peut alors corréler : tentatives de connexion SSH, modifications de configuration, arrêts/suppressions de VMs, et déclencher des alertes automatiques. En conformité PCI-DSS ou ISO 27001, la centralisation des logs est une exigence obligatoire.</div></div>
+</div>
+
+<div class="card rv">
+  <div class="ctitle"><div class="ico">📊</div>Bilan des livrables — §8.3</div>
+  <div class="tw"><table>
+    <thead><tr><th>N°</th><th>Livrable</th><th>Statut</th><th>Localisation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Captures d'écran (ESXi, Proxmox, VM, snapshot, réseau, RBAC)</td><td class="good">✅ Réalisé</td><td>Captures 1–8 dans ce rapport</td></tr>
+      <tr><td>2</td><td>Tableau comparatif personnalisé (12 critères)</td><td class="good">✅ Réalisé</td><td>Partie C — tableau comparatif</td></tr>
+      <tr><td>3</td><td>Schéma d'architecture du mini-lab</td><td class="good">✅ Réalisé</td><td>Partie D — schéma SVG</td></tr>
+      <tr><td>4</td><td>Réponses aux questions (tech + cybersécurité + exercice PME)</td><td class="good">✅ Réalisé</td><td>Parties A, B, C, D, F</td></tr>
+      <tr><td>5</td><td>Documentation du mini-lab (étapes, mesures sécu, snapshot/restore)</td><td class="good">✅ Réalisé</td><td>Partie D — documentation</td></tr>
+      <tr><td>6</td><td>Rapport final structuré</td><td class="good">✅ Ce document</td><td>HTML exportable en PDF</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+</div><!-- /wrap -->
+
+<div class="foot">
+  <strong>Rapport TP Cloud &amp; Virtualisation — ESXi vs Proxmox VE</strong><br>
+  Réalisé par <strong>AKRAM LOUTOUAT</strong> &nbsp;·&nbsp; Filière Cybersécurité &nbsp;·&nbsp;
+  Encadré par <strong>AHMED AMAMOU</strong> &nbsp;·&nbsp; Euromed University of Fes &nbsp;·&nbsp; 2025 / 2026
+</div>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const s=window.scrollY,d=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('pb').style.width=(s/d*100)+'%';
+  document.getElementById('btt').classList.toggle('show',s>400);
+});
+function rev(){document.querySelectorAll('.rv').forEach((e,i)=>{if(e.getBoundingClientRect().top<window.innerHeight*.93&&!e.classList.contains('on'))setTimeout(()=>e.classList.add('on'),i%3*60);});}
+window.addEventListener('scroll',rev);window.addEventListener('load',()=>setTimeout(rev,80));
+const ids=['cover','intro','toc','pA','pB','pC','pD','pF'];
+document.querySelectorAll('.fd').forEach(d=>{
+  d.addEventListener('click',()=>{const el=document.getElementById(d.dataset.t);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});});
+});
+function upNav(){let c='';ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<window.innerHeight*.5)c=id;});document.querySelectorAll('.fd').forEach(d=>d.classList.toggle('on',d.dataset.t===c));}
+window.addEventListener('scroll',upNav);
+</script>
+</body>
+</html>
